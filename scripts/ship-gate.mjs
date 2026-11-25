@@ -72,7 +72,9 @@ function parseVerdict(lines) {
 function runFlow(flowPath) {
   return new Promise((resolve) => {
     const lines = [];
-    const child = spawn('kane-cli', ['testmd', 'run', flowPath, '--agent'], { cwd: ROOT });
+    // Headless + a hard timeout: this VM has no display server, and a
+    // hung browser must not hang the gate forever.
+    const child = spawn('kane-cli', ['testmd', 'run', flowPath, '--agent', '--headless', '--timeout', '300'], { cwd: ROOT });
     child.stdout.on('data', (d) => lines.push(...String(d).split('\n')));
     child.stderr.on('data', (d) => lines.push(...String(d).split('\n')));
     child.on('error', (err) => {
