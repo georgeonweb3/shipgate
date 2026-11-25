@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Order placed — ShipGate Store</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main>
+  <h1 id="success-heading">Order placed</h1>
+  <div id="order-details" hidden>
+    <p>Thank you! Your demo order is confirmed. <strong>DEMO — no real payment was taken.</strong></p>
+    <dl class="totals">
+      <div><dt>Order number</dt><dd id="order-number"></dd></div>
+      <div><dt>Order total</dt><dd id="order-total"></dd></div>
+    </dl>
+    <p><a href="index.html">Back to the store</a></p>
+  </div>
+  <div id="no-order" hidden>
+    <p><strong>No order placed.</strong> There is no order to show here yet.</p>
+    <p><a href="index.html">Go to the ShipGate Store</a> to place an order.</p>
+  </div>
+</main>
+<script>
+(function () {
+  // The success screen only ever shows an order this browser session
+  // actually placed. Arriving here directly, with no order in storage,
+  // shows "No order placed" instead of a fake confirmation.
+  var raw = null;
+  try { raw = sessionStorage.getItem('shipgate-order'); } catch (e) { raw = null; }
+  var order = null;
+  try { order = raw ? JSON.parse(raw) : null; } catch (e) { order = null; }
+  if (order && order.number && typeof order.total === 'number') {
+    document.getElementById('order-number').textContent = order.number;
+    document.getElementById('order-total').textContent = '$' + order.total.toFixed(2);
+    document.getElementById('order-details').hidden = false;
+    document.getElementById('success-heading').textContent = 'Order placed';
+  } else {
+    document.getElementById('no-order').hidden = false;
+    document.getElementById('success-heading').textContent = 'No order placed';
+  }
+})();
+</script>
+</body>
+</html>

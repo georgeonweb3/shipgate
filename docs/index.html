@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ShipGate Store — DEMO</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main>
+  <header>
+    <h1>ShipGate Store</h1>
+    <p class="tagline">A demo storefront. <strong>DEMO — no real payment, no real money moves.</strong> All card details are test data only.</p>
+  </header>
+
+  <section aria-label="Products">
+    <h2>Products</h2>
+    <div class="products">
+      <article class="product" data-product="hoodie">
+        <h3>Kane Hoodie</h3>
+        <p class="price">$25.00</p>
+        <p>Heavyweight hoodie with the ShipGate mark.</p>
+        <button type="button" data-add="hoodie">Add to cart</button>
+      </article>
+      <article class="product" data-product="sticker">
+        <h3>Sticker Pack</h3>
+        <p class="price">$5.00</p>
+        <p>Five vinyl stickers. Laptop-grade.</p>
+        <button type="button" data-add="sticker">Add to cart</button>
+      </article>
+      <article class="product" data-product="token">
+        <h3>Deploy Token</h3>
+        <p class="price">$17.50</p>
+        <p>One deploy through the ShipGate gate.</p>
+        <button type="button" data-add="token">Add to cart</button>
+      </article>
+    </div>
+  </section>
+
+  <section aria-label="Cart">
+    <h2>Your cart</h2>
+    <p id="empty-cart-message">Your cart is empty.</p>
+    <ul id="cart-lines"></ul>
+    <div id="cart-error" class="error" role="alert" hidden></div>
+
+    <div class="coupon">
+      <label for="coupon-input">Coupon code</label>
+      <input id="coupon-input" type="text" placeholder="KANE50" autocomplete="off">
+      <button id="apply-coupon" type="button">Apply</button>
+      <span id="coupon-message" class="muted"></span>
+    </div>
+
+    <dl class="totals">
+      <div><dt>Subtotal</dt><dd id="subtotal">$0.00</dd></div>
+      <div><dt>Discount</dt><dd id="discount">−$0.00</dd></div>
+      <div><dt>Order total</dt><dd id="order-total">$0.00</dd></div>
+    </dl>
+  </section>
+
+  <section aria-label="Checkout">
+    <h2>Checkout</h2>
+    <p class="muted">Test data only — use any name, any email, and card number 4242 4242 4242 4242. Nothing is charged.</p>
+    <form id="checkout-form" novalidate>
+      <label for="name">Name</label>
+      <input id="name" name="name" type="text" autocomplete="name">
+
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" autocomplete="email">
+
+      <label for="card">Card number (test data only)</label>
+      <input id="card" name="card" type="text" inputmode="numeric" autocomplete="cc-number" placeholder="4242 4242 4242 4242">
+
+      <div id="checkout-error" class="error" role="alert" hidden></div>
+      <button id="place-order" type="submit">Place order</button>
+    </form>
+  </section>
+</main>
+<script src="verify.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
