@@ -17,12 +17,14 @@ const CART_3 = { hoodie: 1, sticker: 1, token: 1 };
 //    25.00 + 5.00 + 17.50 = 47.50 subtotal; one $5 coupon = $42.50.
 check('independent correct total (47.50 - 5.00)', 47.5 - 5.0, 42.5);
 
-// 2. The buggy v1 total: the planted per-line bug gives $15 off, $32.50.
-const buggy = V.computeTotal(CART_3, 'KANE50');
-check('v1 computeTotal subtotal', buggy.subtotal, 47.5);
-check('v1 computeTotal discount (per-line bug: 3 x $5)', buggy.discount, 15.0);
-check('v1 computeTotal total (buggy)', buggy.total, 32.5);
-check('v1 leak vs correct total', +(42.5 - buggy.total).toFixed(2), 10.0);
+// 2. The fixed v2 total: the coupon is $5 once per order, not per line.
+//    Kane caught the v1 per-line bug live (2026-11-26); these now assert
+//    the correct behaviour: $5 off, $42.50 total, $0 leak.
+const fixed = V.computeTotal(CART_3, 'KANE50');
+check('v2 computeTotal subtotal', fixed.subtotal, 47.5);
+check('v2 computeTotal discount (once per order: $5)', fixed.discount, 5.0);
+check('v2 computeTotal total (fixed)', fixed.total, 42.5);
+check('v2 leak vs correct total', +(42.5 - fixed.total).toFixed(2), 0.0);
 
 // 3. No coupon: full subtotal, no discount.
 check('no-coupon total', V.computeTotal(CART_3, null), { subtotal: 47.5, discount: 0, total: 47.5 });
