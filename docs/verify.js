@@ -59,20 +59,10 @@
 
     var discountCents = 0;
     if (couponCode === COUPON_CODE) {
-      // ================================================================
-      // DELIBERATE ADVERSARY TEST — PLANTED BUG (v1 only, do not "fix"
-      // silently: the fix is a separate commit after Kane catches it).
-      //
-      // WRONG: the $5 discount is applied once PER LINE ITEM instead of
-      // once per order. With 3 lines that is $15 off instead of $5:
-      //   subtotal $47.50 - $15.00 = $32.50 (correct total is $42.50).
-      // That is a $10.00 leak, and the coupon-per-line Kane flow exists
-      // to catch exactly this. Every other guard in this file is
-      // CORRECT in v1; only this line is wrong.
-      //
-      // CORRECT (v2): discountCents = COUPON_DISCOUNT_CENTS;
-      // ================================================================
-      discountCents = COUPON_DISCOUNT_CENTS * lineCount(cart); // <-- PLANTED BUG
+      // Fixed in v2: Kane caught the v1 bug live (coupon-per-line flow,
+      // 2026-11-26) — the $5 discount was applied once PER LINE ITEM
+      // ($15 off on 3 lines, total $32.50). Correct: once per order.
+      discountCents = COUPON_DISCOUNT_CENTS;
     }
 
     if (discountCents > subtotalCents) discountCents = subtotalCents;
