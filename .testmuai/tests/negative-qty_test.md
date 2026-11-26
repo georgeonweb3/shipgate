@@ -21,13 +21,9 @@ Click the "Add to cart" button under "Kane Hoodie". The "Order total" should rea
 
 Find the quantity number field for "Kane Hoodie" in the cart and change its value to -1.
 
-## The quantity is back to 1
-
-The Kane Hoodie quantity field now shows 1.
-
 ## An error message is visible
 
-An error message is visible saying the quantity must be at least 1.
+An error message is visible saying the quantity must be a whole number of at least 1 and has been reset to 1.
 
 ## The total is still $25.00
 
