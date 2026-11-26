@@ -27,25 +27,23 @@ All money is decided by one deterministic module, `docs/verify.js` (`computeTota
 
 ## The adversary test (read this before judging the bug)
 
-**v1 contains one DELIBERATE planted bug**, labelled as such in the code (`docs/verify.js`) and here: the `KANE50` discount is applied **$5 off per line item** instead of once per order. With three lines that is $15 off, total **$32.50** — a **$10.00 leak**. It is not an accident and it is not hidden: it exists so Kane can catch it on camera. The `coupon-per-line` flow is written to catch exactly this. Every other guard is correct in v1: applying the coupon twice is refused, negative quantities are refused/clamped, empty-cart checkout is refused, and skipping to the success screen shows "No order placed".
+**v1 contained one DELIBERATE planted bug**, labelled as such in the code (`docs/verify.js`) and here: the `KANE50` discount was applied **$5 off per line item** instead of once per order. With three lines that is $15 off, total **$32.50** — a **$10.00 leak**. It was not an accident and it was not hidden: it existed so Kane could catch it on camera. The `coupon-per-line` flow was written to catch exactly this — and it did, on Nov 26, with the exact diagnosis in the run log: "The cart treats one whole-order coupon as a separate $5.00 discount for each of the three line items." Every other guard was correct in v1: applying the coupon twice is refused, negative quantities are refused/clamped, empty-cart checkout is refused, and skipping to the success screen shows "No order placed".
 
-The loop: Kane fails the coupon flow → the gate refuses to ship → the bug is fixed in one line (`discountCents = COUPON_DISCOUNT_CENTS`) → Kane re-runs → all pass → the fix ships.
+The loop, as it actually ran: Kane failed the coupon flow → the gate refused to ship → the bug was fixed in one line (`discountCents = COUPON_DISCOUNT_CENTS`, commit a546bf9) → Kane re-ran → all 6 flows passed → the fix shipped (repo HEAD 9601035).
 
-## Eval table
+## Eval table (real Kane runs, Nov 26, UTC)
 
 | Flow | v1 (buggy) | v2 (fixed) |
 |---|---|---|
-| Happy path checkout | PENDING — Kane run not yet done | PENDING |
-| Coupon twice | PENDING | PENDING |
-| Negative quantity | PENDING | PENDING |
-| Empty cart checkout | PENDING | PENDING |
-| Skip to success | PENDING | PENDING |
-| Coupon per line ($10 leak) | PENDING — expected FAIL ($32.50) | PENDING |
-| **Total through** | PENDING | PENDING |
+| Coupon per line ($10 leak) | **FAIL — Kane caught it, total $32.50 vs correct $42.50** | PASS 07:02 |
+| Coupon twice | Inconclusive — agent stuck, harness noise | PASS 07:07 |
+| Empty cart checkout | Inconclusive — 3/4, token expired mid-run | PASS 07:13 |
+| Happy path checkout | Inconclusive — 0/7, OAuth token dead | PASS 07:26 |
+| Skip to success | Never ran (suite killed by restart) | PASS 07:34 |
+| Negative quantity | Never ran in v1 | PASS 07:49 |
+| **Total through** | **$10.00 (the leak Kane caught)** | **$0.00** |
 
-No Kane run has happened yet, so no run results are claimed here. The table is filled in from the real Kane logs after the runs, and the fix only ships on a Kane PASS re-run.
-
-> **Note on the v1 happy path:** the planted bug fires on *any* coupon application, so the happy-path flow (which applies KANE50 and checks $42.50) is also expected to FAIL in v1 at $32.50, not just the coupon-per-line flow. The eval table above will record whatever Kane actually reports; if Kane fails both, that is the honest result and the win thesis updates to match it.
+Honest note: the v1 suite was cut short by a 1-hour OAuth token expiry and a runtime restart, so only the coupon-per-line flow got a clean v1 verdict. The other v1 outcomes are recorded as inconclusive, not as passes or fails. The v2 suite ran flow-by-flow with a token refresh before each flow, 6/6 PASS, logs in `evidence/v2/`. Credits: 11,200 at login → 10,634.18 remaining (565.82 spent). Unit checks: all pass.
 
 ## Real vs simulated
 
@@ -56,7 +54,7 @@ No Kane run has happened yet, so no run results are claimed here. The table is f
 | Deploy | Real push to GitHub Pages on Kane pass | — |
 | The bug | Real code defect in v1, really caught by Kane | Planted deliberately as an adversary test (labelled, not presented as accidental) |
 | Agent | Muse (the coding agent) wrote the app | The "Breaker" is a persona/prompt, not a separate agent process |
-| Weakness (named honestly) | Kane flows are plain-English and slow (~1–3 min per flow); the gate adds minutes to a deploy. Mitigation: flows run in sequence here; the slowness is the price of a real browser verdict. | — |
+| Weakness (named honestly) | Kane flows are plain-English and slow: v2 flows took 5–13 min each, so the full gate takes ~35 min. Mitigation: flows run in sequence with a token refresh before each (the 1-hour OAuth token is the binding constraint); the slowness is the price of a real browser verdict. | — |
 
 ## Criterion table
 
