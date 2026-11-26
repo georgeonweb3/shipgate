@@ -23,4 +23,4 @@ Find the quantity number field for "Kane Hoodie" in the cart and change its valu
 
 ## The total must not drop
 
-The "Order total" must not go below $25.00. Either the quantity is reset to 1 with a visible error message saying the quantity must be at least 1, or the change is refused. The total must never become negative or lower than the price of one hoodie.
+Read what the page actually shows right now: the number in the Kane Hoodie quantity field, the text of any error message in the cart, and the "Order total" text. Check those displayed values: the quantity field must show 1, an error message must be visible saying the quantity must be at least 1, and the Order total must read $25.00. The total must never be negative or lower than $25.00.
